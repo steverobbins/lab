@@ -1,12 +1,29 @@
 <?php
-
-class MultiSoapClient {
+/**
+ * Supports switching soap versions without much effort.
+ * Make all calls like you would with version 1, leaving out the session;
+ * 
+ * $soap = MultiVersionSoapClient("http://example.com/", "user", "password");
+ * $soap->call("catalog_product.update", $arg1, $arg2, ...);
+ */
+class MultiVersionSoapClient {
 
     private $session = NULL;
     private $client  = NULL;
     private $version = 2;
     public  $verbose = true;
 
+    /**
+     * Starts the soap connection
+     * 
+     * @param string $url
+     * @param string $user
+     * @param string $pass
+     * @param int    $version (Default: 2)
+     * @param bool   $verbose (Default: true)
+     * 
+     * @return MultiVersionSoapClient
+     */
     public function __construct($url, $user, $pass, $version = 2, $verbose = true) {
 
         try {
@@ -28,13 +45,23 @@ class MultiSoapClient {
 
             self::note("Connection Error: " . $e->getMessage());
         }
+
+        return $this;
     }
 
+    /**
+     * Makes the soap call.  Any number of arguments are allowed.
+     * The first arg must refer to the method call
+     * 
+     * @param string $method
+     * @param mixed  $args (As many as needed)
+     * 
+     * @return mixed
+     */
     public function call() {
 
         $args = array_reverse(func_get_args());
 
-        $module = array_pop($args);
         $method = array_pop($args);
 
         try {
@@ -43,24 +70,19 @@ class MultiSoapClient {
 
                 case 1:
 
-                    $func = "$module.$method";
-
-                    self::note("Calling $func()...");
-
-
+                    self::note("Calling $method()...");
 
                     $result = call_user_func_array(
                         array($this->client, "call"),
                         array_merge(
-                            array($this->session, $func),
+                            array($this->session, $method),
                             array_reverse($args)
                         )
                     );
                     break;
                 case 2:
 
-                    $words = explode(" ", str_replace("_", " ", $module . " " . $method));
-
+                    $words = explode(" ", str_replace(array("_", "."), " ", $method));
                     $func = '';
 
                     foreach ($words as $key => $word) {
@@ -100,8 +122,13 @@ class MultiSoapClient {
         }
     }
 
+    /**
+     * For my purposes, this calls the note function from my tools.php
+     * 
+     * @param string $message
+     */
     private function note() {
 
-        if ($this->verbose) call_user_func_array("note", func_get_args());
+        if ($this->verbose) return call_user_func_array("note", func_get_args());
     }
 }
