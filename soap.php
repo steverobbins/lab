@@ -60,9 +60,9 @@ class MultiVersionSoapClient {
      */
     public function call() {
 
-        $args = array_reverse(func_get_args());
+        $args = func_get_args();
 
-        $method = array_pop($args);
+        $method = array_shift($args);
 
         try {
 
@@ -76,7 +76,7 @@ class MultiVersionSoapClient {
                         array($this->client, "call"),
                         array_merge(
                             array($this->session, $method),
-                            array_reverse($args)
+                            $args
                         )
                     );
                     break;
@@ -97,7 +97,7 @@ class MultiVersionSoapClient {
                         array($this->client, $func),
                         array_merge(
                             array($this->session),
-                            array_reverse($args)
+                            $args
                         )
                     );
                     break;
