@@ -104,7 +104,6 @@ class MultiVersionSoapClient {
                 default:
 
                     $result = NULL;
-                    self::note("Call failed.");
             }
 
             if (is_null($result)) {
