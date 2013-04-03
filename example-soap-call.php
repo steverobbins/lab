@@ -1,7 +1,7 @@
 <?php
 
-include '../tools.php';
-include '../soap.php';
+include 'tools.php';
+include 'soap.php';
 
 // Define Soap API urls
 $url = array(
