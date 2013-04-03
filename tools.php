@@ -9,18 +9,16 @@ header("Content-Type: text/plain");
 // clears terminal
 if (php_sapi_name() == 'cli') array_map(create_function('$a', 'print chr($a);'), array(27, 91, 72, 27, 91, 50, 74));
 
-function note($message = '') {
+function note($message = '', $date = true) {
 
-    echo str_pad((float)round(microtime(true) - REQUEST_START, 3), 10);
+    if ($date) echo str_pad((float)round(microtime(true) - REQUEST_START, 3), 10);
 
     $canEcho = true;
     if (is_string($message) || is_numeric($message)) echo $message;
     else {
-        echo '[' . gettype($message) . ']';
         $canEcho = false;
+        var_dump($message);
     }
 
-    echo "\n";
-
-    return $canEcho;
+    if ($canEcho) echo "\n";
 }

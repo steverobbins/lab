@@ -22,7 +22,7 @@ class MultiVersionSoapClient {
      * @param int    $version (Default: 2)
      * @param bool   $verbose (Default: true)
      * 
-     * @return MultiVersionSoapClient
+     * @return bool|MultiVersionSoapClient
      */
     public function __construct($url, $user, $pass, $version = 2, $verbose = true) {
 
@@ -44,6 +44,7 @@ class MultiVersionSoapClient {
         catch (SoapFault $e) {
 
             self::note("Connection Error: " . $e->getMessage());
+            return false;
         }
 
         return $this;
@@ -115,9 +116,13 @@ class MultiVersionSoapClient {
             self::note("Call was completed successfully.");
             return $result;
         }
+        catch (SoapFault $e) {
+
+            self::note("Call failed, caught SoapFault (" . $e->faultcode . "): " . $e->getMessage());
+        }
         catch (Exception $e) {
 
-            self::note("Call failed. " . $e->getMessage());
+            self::note("Call failed: " . $e->getMessage());
         }
     }
 
