@@ -104,13 +104,8 @@ class MultiVersionSoapClient {
                     break;
                 default:
 
-                    $result = NULL;
-            }
-
-            if (is_null($result)) {
-
-                self::note("Call failed.  No handler for Soap API Version " . $this->version);
-                return false;
+                    self::note("Call failed.  No handler for Soap API Version " . $this->version);
+                    return false;
             }
 
             self::note("Call was completed successfully.");
