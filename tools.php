@@ -17,8 +17,10 @@ function note($message = '', $time = true) {
     if (is_string($message) || is_numeric($message)) echo $message;
     else {
         $canEcho = false;
-        var_dump($message);
+        echo "[" . gettype($message) . "]";
     }
 
-    if ($canEcho) echo "\n";
+    echo "\n";
+
+    $return $canEcho;
 }
