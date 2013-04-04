@@ -6,13 +6,12 @@
  * $soap = MultiVersionSoapClient("http://example.com/", "user", "password");
  * $soap->call("catalog_product.update", $arg1, $arg2, ...);
  */
-class MultiVersionSoapClient {
+class MultiVersionSoapClient
+extends SoapClient {
 
-    private $session = NULL;
-    private $client  = NULL;
-    private $version = 2;
-    public  $verbose = true;
-
+    private $session;
+    private $client;
+    private $version;
     /**
      * Starts the soap connection
      * 
@@ -24,7 +23,7 @@ class MultiVersionSoapClient {
      * 
      * @return bool|MultiVersionSoapClient
      */
-    public function __construct($url, $user, $pass, $version = 2, $verbose = true) {
+    public function __construct($url, $user = false, $pass = false, $version = 2, $verbose = true) {
 
         try {
 
@@ -33,13 +32,11 @@ class MultiVersionSoapClient {
 
             self::note("Connecting to $url... (Soap API Version " . $this->version . ")");
 
-            $this->client = new SoapClient($url);
+            $this->client = parent::__constuct($url);
 
             self::note("Connected.");
 
-            $this->session = $this->client->login($user, $pass);
-
-            self::note("Logged in as user '$user'");
+            if ($user && $pass) $this->login($user, $pass);
         }
         catch (SoapFault $e) {
 
@@ -84,18 +81,18 @@ class MultiVersionSoapClient {
                 case 2:
 
                     $words = explode(" ", str_replace(array("_", "."), " ", $method));
-                    $func = '';
+                    $method = '';
 
                     foreach ($words as $key => $word) {
 
-                        if ($key > 0) $func .= ucfirst($word);
-                        else $func .= $word;
+                        if ($key > 0) $method .= ucfirst($word);
+                        else $method .= $word;
                     }
 
-                    self::note("Calling $func()...");
+                    self::note("Calling $method()...");
 
                     $result = call_user_func_array(
-                        array($this->client, $func),
+                        array($this->client, $method),
                         array_merge(
                             array($this->session),
                             $args
@@ -121,13 +118,28 @@ class MultiVersionSoapClient {
         }
     }
 
+    public function login($user, $pass) {
+
+        $this->session = $this->client->login($user, $pass);
+
+        self::note("Logged in as user '$user'");
+    }
+
     /**
      * For my purposes, this calls the note function from my tools.php
      * 
      * @param string $message
+     * 
+     * @return bool|void
      */
     private function note() {
 
         if ($this->verbose) return call_user_func_array("note", func_get_args());
+    }
+
+    public function __set($name, $val) {
+
+        if (!is_string($val) || !is_numeric($val)) $val = "[" . gettype($val) . "]";
+        self::note("Setting '$name' to '$val'");
     }
 }
