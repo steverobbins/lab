@@ -6,12 +6,12 @@
  * $soap = MultiVersionSoapClient("http://example.com/", "user", "password");
  * $soap->call("catalog_product.update", $arg1, $arg2, ...);
  */
-class MultiVersionSoapClient
-extends SoapClient {
+class MultiVersionSoapClient {
 
     private $session;
     private $client;
     private $version;
+    public  $verbose;
     /**
      * Starts the soap connection
      * 
@@ -32,13 +32,18 @@ extends SoapClient {
 
             self::note("Connecting to $url... (Soap API Version " . $this->version . ")");
 
-            $this->client = parent::__constuct($url);
-
+            $this->client = new SoapClient($url);
+            
             self::note("Connected.");
 
-            if ($user && $pass) $this->login($user, $pass);
+            if ($user && $pass) self::login($user, $pass);
         }
         catch (SoapFault $e) {
+
+            self::note("Connection Error (" . $e->faultcode . "): " . $e->getMessage());
+            return false;
+        }
+        catch (Exception $e) {
 
             self::note("Connection Error: " . $e->getMessage());
             return false;
@@ -120,9 +125,21 @@ extends SoapClient {
 
     public function login($user, $pass) {
 
-        $this->session = $this->client->login($user, $pass);
+        try {
 
-        self::note("Logged in as user '$user'");
+            $this->session = $this->client->login($user, $pass);
+
+            self::note("Logged in as user '$user'");
+        }
+        catch (SoapFault $e) {
+
+            self::note("Login Error (" . $e->faultcode . "): " . $e->getMessage());
+            return false;
+        }
+        catch (Exception $e) {
+
+            self::note("Login Error: " . $e->getMessage());
+        }
     }
 
     /**
@@ -135,11 +152,5 @@ extends SoapClient {
     private function note() {
 
         if ($this->verbose) return call_user_func_array("note", func_get_args());
-    }
-
-    public function __set($name, $val) {
-
-        if (!is_string($val) || !is_numeric($val)) $val = "[" . gettype($val) . "]";
-        self::note("Setting '$name' to '$val'");
     }
 }
