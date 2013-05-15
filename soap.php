@@ -1,10 +1,10 @@
 <?php
 /**
  * Supports switching soap versions without much effort.
- * Make all calls like you would with version 1, leaving out the session;
+ * Make all calls like you would with version 1, leaving out the session.
  * 
  * $soap = MultiVersionSoapClient("http://example.com/", "user", "password");
- * $soap->call("catalog_product.update", $arg1, $arg2, ...);
+ * $result = $soap->call("catalog_product.update", $arg1, $arg2, ...);
  */
 class MultiVersionSoapClient {
 
@@ -12,6 +12,7 @@ class MultiVersionSoapClient {
     private $client;
     private $version;
     public  $verbose;
+
     /**
      * Starts the soap connection
      * 
@@ -32,7 +33,16 @@ class MultiVersionSoapClient {
 
             self::note("Connecting to $url... (Soap API Version " . $this->version . ")");
 
-            $this->client = new SoapClient($url);
+            $this->client = new SoapClient(
+                $url,
+                array(
+                    'cache_wsdl' => 0,
+                    'exceptions' => true,
+                    'trace'      => true,
+                    'style'      => SOAP_DOCUMENT,
+                    'use'        => SOAP_LITERAL
+                )
+            );
             
             self::note("Connected.");
 
@@ -123,6 +133,14 @@ class MultiVersionSoapClient {
         }
     }
 
+    /**
+     * Perform soap login
+     * 
+     * @param string $user
+     * @param string $pass
+     * 
+     * @return void
+     */
     public function login($user, $pass) {
 
         try {
