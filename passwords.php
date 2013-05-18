@@ -5,7 +5,7 @@ $characters = array(
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 );
-$specials = array('!','#','$','*','&', '.');
+$specials = array('!','#','$','*','&', '.', '-', '_', '?');
 
 include "readablewords.php";
 
@@ -42,7 +42,7 @@ include "readablewords.php";
 
         $total = count($characters) - 1;
 
-        ?><h3>No Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)</h3><?php
+        ?><h3>No Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)<br /><?php echo implode("", $characters) ?></h3><?php
 
         for ($i = 0; $i < 150; $i++) {
 
@@ -53,11 +53,11 @@ include "readablewords.php";
         $characters = array_merge($characters, $specials);
         $total = count($characters) - 1;
 
-        ?><hr /><h3>Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)</h3><?php
+        ?><hr /><h3>Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)<br /><?php echo implode("", $characters) ?></h3><?php
 
         for ($i = 0; $i < 150; $i++) {
 
-            for ($j = 0; $j < $num; $j++) echo $characters[mt_rand(0, $total)];
+            for ($j = 0; $j < $num; $j++) echo htmlentities($characters[mt_rand(0, $total)]);
             echo "\t";
         }
 
