@@ -14,6 +14,10 @@ include "readablewords.php";
         <title>Password Generator</title>
         <style type="text/css">
 
+            body {
+                font-family: Arial;
+            }
+
             hr {
                 margin-top: 20px;
             }
@@ -21,6 +25,10 @@ include "readablewords.php";
             pre {
                 white-space: pre-wrap;
                 word-wrap: break-word;
+            }
+
+            .floatR {
+                float: right;
             }
 
         </style>
@@ -42,7 +50,13 @@ include "readablewords.php";
 
         $total = count($characters) - 1;
 
-        ?><h3>No Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)<br /><?php echo implode("", $characters) ?></h3><?php
+        ?></pre>
+
+            <span class="floatR"><?php echo implode("", $characters) ?></span>
+        
+            <h3>No Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)</h3>
+
+        <pre><?php
 
         for ($i = 0; $i < 150; $i++) {
 
@@ -53,7 +67,15 @@ include "readablewords.php";
         $characters = array_merge($characters, $specials);
         $total = count($characters) - 1;
 
-        ?><hr /><h3>Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)<br /><?php echo implode("", $characters) ?></h3><?php
+        ?></pre>
+        
+            <hr />
+
+            <span class="floatR"><?php echo implode("", $characters) ?></span>
+
+            <h3>Special Characters (<?php echo number_format(pow($total + 1, $num)) ?> combinations)</h3>
+
+        <pre><?php
 
         for ($i = 0; $i < 150; $i++) {
 
@@ -85,7 +107,13 @@ include "readablewords.php";
 
         array_pop($readables);
 
-        ?><hr /><h3>Readable (<?php echo number_format($multiplier) ?> combinations)</h3><?php
+        ?></pre>
+        
+            <hr />
+
+            <h3>Readable (<?php echo number_format($multiplier) ?> combinations)</h3>
+
+        <pre><?php
 
         foreach ($readables as $readable) echo str_pad($readable, $biggest + 1);
 
